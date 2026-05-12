@@ -4,10 +4,6 @@ services:
   # ==========================================
   # MongoDB - Primary Database
   # ==========================================
-  cloudinary:
-    cloud-name: {CLOUD_NAME}
-    api-key: {API_KEY}
-    api-secret: {API_SECRET}
   mongodb:
     image: mongo:6.0
     container_name: buy01-mongodb
@@ -25,7 +21,7 @@ services:
   # Zookeeper - Required for Kafka
   # ==========================================
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.0
+    image: confluentinc/cp-zookeeper:latest
     container_name: buy01-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -55,22 +51,59 @@ services:
     networks:
       - buy01-network
 
-# ==========================================
+  # ==========================================
   # Mongo Express (Optional UI for your DB)
-# ==========================================
+  # ==========================================
   mongo-express:
     image: mongo-express:1.0.2
     container_name: buy01-mongo-express
     restart: unless-stopped
     ports:
-      - "8085:8081" 
+      - "8085:8081"
     environment:
       # 1. Credentials for the Browser UI login pop-up
       ME_CONFIG_BASICAUTH_USERNAME: ${DB_USER_CONFIG}
       ME_CONFIG_BASICAUTH_PASSWORD: ${DB_PASSWORD_CONFIG}
-      
+
       # 2. The single connection string required by v1.0.2+
-      ME_CONFIG_MONGODB_URL: mongodb://${DB_USER_CONFIG}:${DB_PASSWORD_CONFIG}@mongodb:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - buy01-network
+  product-service:
+    build: ./backend/product-service
+    container_name: buy01-product-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/product_db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - buy01-network
+  user-service:
+    build: ./backend/user-service
+    container_name: buy01-user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/user_db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - buy01-network
+  media-service:
+    build: ./backend/media-service
+    container_name: buy01-media-service
+    ports:
+      - "8082:8082"
+    environment:
+      # environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/media_db?authSource=admin
+      CLOUDINARY_CLOUD_NAME: ${CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${API_KEY}
+      CLOUDINARY_API_SECRET: ${API_SECRET}
     depends_on:
       - mongodb
     networks:

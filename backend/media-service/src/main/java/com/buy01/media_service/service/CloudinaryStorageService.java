@@ -1,4 +1,4 @@
-package com.buy01.media_service;
+package com.buy01.media_service.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

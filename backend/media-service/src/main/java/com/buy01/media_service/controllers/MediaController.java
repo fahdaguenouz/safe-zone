@@ -1,12 +1,12 @@
 package com.buy01.media_service.controllers;
 
-import com.buy01.media_service.CloudinaryStorageService;
-
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.buy01.media_service.service.CloudinaryStorageService;
 
 import java.util.ArrayList;
 import java.util.List;
