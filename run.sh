@@ -2,6 +2,11 @@
 clear
 echo "🚀 Quick Starting Buy 01 Microservices Ecosystem..."
 
+# Load environment variables
+if [ -f "./load_env.sh" ]; then
+    source ./load_env.sh
+fi
+
 # Clean old logs
 echo "🧹 Clearing old log files..."
 rm -rf logs

@@ -3,6 +3,11 @@
 # Stop the script if any command fails
 set -e
 
+# Load environment variables
+if [ -f "./load_env.sh" ]; then
+    source ./load_env.sh
+fi
+
 # Define the colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'

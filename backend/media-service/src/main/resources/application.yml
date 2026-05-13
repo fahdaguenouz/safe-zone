@@ -36,7 +36,7 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${DISCOVERY_HOST}:${DISCOVERY_PORT}/eureka/
 
 springdoc:
   api-docs:
