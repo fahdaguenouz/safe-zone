@@ -108,6 +108,30 @@ services:
       - mongodb
     networks:
       - buy01-network
+  discovery-service:
+    build: ./backend/discovery-server
+    container_name: buy01-discovery-service
+    ports:
+      - "8083:8083"
+    environment:
+      # environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/media_db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - buy01-network
+  api-gateway:
+    build: ./backend/api-gateway-service
+    container_name: buy01-api-gateway-service
+    ports:
+      - "8084:8084"
+    environment:
+      # environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/media_db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - buy01-network
 # Define persistent storage and networking
 volumes:
   mongo-data:
