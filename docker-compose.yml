@@ -74,75 +74,63 @@ services:
   product-service:
     build: ./backend/product-service
     container_name: buy01-product-service
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8088:8088"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/product_db?authSource=admin
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-    depends_on:
-      - mongodb
-      - discovery-service
-      - kafka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      MEDIA_SERVICE_BASE_URL: http://media-service:8083/api/media/images/
     networks:
       - buy01-network
   user-service:
     build: ./backend/user-service
     container_name: buy01-user-service
+    restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/user_db?authSource=admin
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-    depends_on:
-      - mongodb
-      - discovery-service
-      - kafka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      MEDIA_SERVICE_BASE_URL: http://media-service:8083/api/media/images/
     networks:
       - buy01-network
   media-service:
     build: ./backend/media-service
     container_name: buy01-media-service
+    restart: unless-stopped
     ports:
-      - "8082:8082"
+      - "8083:8083"
     environment:
       # environment:
       SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/media_db?authSource=admin
-      CLOUDINARY_CLOUD_NAME: ${CLOUD_NAME}
-      CLOUDINARY_API_KEY: ${API_KEY}
-      CLOUDINARY_API_SECRET: ${API_SECRET}
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-    depends_on:
-      - mongodb
-      - discovery-service
-      - kafka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
     networks:
       - buy01-network
   discovery-service:
     build: ./backend/discovery-server
     container_name: buy01-discovery-service
+    restart: unless-stopped
     ports:
       - "8761:8761"
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/discovery_db?authSource=admin
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
-    depends_on:
-      - mongodb
     networks:
       - buy01-network
   api-gateway:
     build: ./backend/api-gateway
     container_name: buy01-api-gateway-service
+    restart: unless-stopped
     ports:
-      - "8084:8084"
+      - "8080:8080"
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD_URL_ENCODED}@mongodb:27017/gateway_db?authSource=admin
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
-    depends_on:
-      - mongodb
-      - discovery-service
     networks:
       - buy01-network
 # Define persistent storage and networking

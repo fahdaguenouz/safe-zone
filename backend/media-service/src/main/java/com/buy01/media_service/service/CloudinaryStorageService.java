@@ -44,36 +44,32 @@ public class CloudinaryStorageService {
 
         try {
 
-            String originalFilename =
-                    StringUtils.cleanPath(file.getOriginalFilename());
+            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
 
             String extension = "";
 
             if (originalFilename.contains(".")) {
                 extension = originalFilename.substring(
-                        originalFilename.lastIndexOf(".")
-                );
+                        originalFilename.lastIndexOf("."));
             }
 
-            String publicId =
-                    UUID.randomUUID().toString();
+            String publicId = UUID.randomUUID().toString();
 
             Map uploadResult = cloudinary.uploader().upload(
                     file.getBytes(),
                     ObjectUtils.asMap(
                             "public_id", publicId,
                             "folder", "buy01",
-                            "resource_type", "image"
-                    )
-            );
+                            "resource_type", "image"));
 
             return uploadResult;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
 
             log.error("Cloudinary upload failed", e);
 
-            throw new RuntimeException("Failed to upload image.");
+            throw new RuntimeException(e);
+            
         }
     }
 
@@ -83,8 +79,7 @@ public class CloudinaryStorageService {
 
             Map result = cloudinary.uploader().destroy(
                     publicId,
-                    ObjectUtils.emptyMap()
-            );
+                    ObjectUtils.emptyMap());
 
             String status = (String) result.get("result");
 

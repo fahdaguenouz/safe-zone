@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserRepository userRepository;
-    @Value("${media-service.base-url:http://localhost:8083/api/media/images/}")
+    @Value("${media-service.base-url}")
     private String mediaServiceBaseUrl;
 
     // GET /users/me - Fetch my own profile

@@ -22,21 +22,21 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductEventProducer productEventProducer;
 
-    @Value("${media-service.base-url:http://localhost:8083/api/media/images/}")
+    @Value("${media-service.base-url}")
     private String mediaServiceBaseUrl;
 
     public ProductResponse createProduct(ProductRequest request, String sellerId) {
 
         // 1. Sanitize the incoming media IDs so we ONLY store the filename
-       List<String> cleanMediaIds = new ArrayList<>();  // ADD THIS LINE
-    if (request.mediaIds() != null) {
-        for (String mediaUrl : request.mediaIds()) {
-            String filename = extractFilename(mediaUrl);
-            if (filename != null && !filename.trim().isEmpty()) {
-                cleanMediaIds.add(filename);
+        List<String> cleanMediaIds = new ArrayList<>(); // ADD THIS LINE
+        if (request.mediaIds() != null) {
+            for (String mediaUrl : request.mediaIds()) {
+                String filename = extractFilename(mediaUrl);
+                if (filename != null && !filename.trim().isEmpty()) {
+                    cleanMediaIds.add(filename);
+                }
             }
         }
-    }
 
         Product product = Product.builder()
                 .name(request.name())
@@ -45,7 +45,7 @@ public class ProductService {
                 .stockQuantity(request.stockQuantity())
                 .category(request.category())
                 .sellerId(sellerId)
-                .mediaIds(cleanMediaIds) 
+                .mediaIds(cleanMediaIds)
                 .build();
 
         Product savedProduct = productRepository.save(product);
@@ -109,35 +109,33 @@ public class ProductService {
         product.setStockQuantity(request.stockQuantity());
         product.setCategory(request.category());
 
-       
-
-       List<String> cleanMediaIds = new ArrayList<>();
-if (request.mediaIds() != null) {
-    for (String mediaUrl : request.mediaIds()) {
-        String filename = extractFilename(mediaUrl);
-        if (filename != null && !filename.trim().isEmpty()) {
-            cleanMediaIds.add(filename);
+        List<String> cleanMediaIds = new ArrayList<>();
+        if (request.mediaIds() != null) {
+            for (String mediaUrl : request.mediaIds()) {
+                String filename = extractFilename(mediaUrl);
+                if (filename != null && !filename.trim().isEmpty()) {
+                    cleanMediaIds.add(filename);
+                }
+            }
         }
-    }
-}
 
         product.setMediaIds(cleanMediaIds.isEmpty() ? null : cleanMediaIds);
         productRepository.save(product);
     }
 
     private ProductResponse mapToResponse(Product product) {
-       List<String> mediaUrls = new ArrayList<>();
-    if (product.getMediaIds() != null) {
-        for (String mediaId : product.getMediaIds()) {
-            if (mediaId != null) {  // Null-safe
-                if (mediaId.startsWith("http")) {
-                    mediaUrls.add(mediaId);
-                } else {
-                    mediaUrls.add(mediaServiceBaseUrl + mediaId);
+        List<String> mediaUrls = new ArrayList<>();
+        if (product.getMediaIds() != null) {
+            for (String mediaId : product.getMediaIds()) {
+                if (mediaId != null) { // Null-safe
+                    if (mediaId.startsWith("http")) {
+                        mediaUrls.add(mediaId);
+                    } else {
+                        mediaUrls.add(mediaServiceBaseUrl + mediaId);
+                    }
                 }
             }
         }
-    }
 
         return ProductResponse.builder()
                 .id(product.getId())
@@ -151,7 +149,6 @@ if (request.mediaIds() != null) {
                 .createdAt(product.getCreatedAt())
                 .build();
     }
-    
 
     // Helper method to extract "abc.jpg" from
     // "http://localhost:8083/api/media/images/abc.jpg"

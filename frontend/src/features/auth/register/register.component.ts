@@ -84,6 +84,10 @@ export class RegisterComponent implements OnInit {
           this.router.navigate(['/login']);
         },
         error: (err) => {
+          console.log(this.registerForm.value);
+          
+          console.log(err);
+          
           this.isLoading = false;
           const errorMsg = err.error?.message || 'Registration failed. Please try again.';
           this.errorMessage = errorMsg;
