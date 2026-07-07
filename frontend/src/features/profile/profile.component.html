@@ -170,7 +170,7 @@
           
           <div class="product-image">
             <img 
-              [src]="product.mediaIds[0] || '/images/product.jpeg'" 
+             [src]="product.media?.[0]?.imageUrl || '/images/product.jpeg'" 
               [alt]="product.name">
             <div class="stock-overlay" [class.low]="product.stockQuantity < 5">
               {{ product.stockQuantity }} left

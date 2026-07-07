@@ -110,7 +110,7 @@
             <td mat-cell *matCellDef="let product">
               <div class="product-cell">
                 <img 
-                  [src]="product.mediaIds[0] || '/images/product.jpeg'" 
+                 [src]="product.media?.[0]?.imageUrl || '/images/product.jpeg'" 
                   [alt]="product.name"
                   class="product-thumb">
                 <div class="product-info">
@@ -190,7 +190,7 @@
         <mat-card class="product-card" *ngFor="let product of filteredProducts">
           <div class="card-header">
             <img 
-              [src]="product.mediaIds[0] || '/images/product.jpeg'" 
+             [src]="product.media?.[0]?.imageUrl || '/images/product.jpeg'" 
               [alt]="product.name">
             <div class="card-header-info">
               <h4>{{product.name}}</h4>

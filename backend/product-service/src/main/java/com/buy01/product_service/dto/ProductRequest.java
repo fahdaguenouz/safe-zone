@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
+import com.buy01.product_service.models.ProductMedia;
 
 public record ProductRequest(
     @NotBlank(message = "Product name is required") String name,
@@ -13,5 +14,5 @@ public record ProductRequest(
     @NotNull(message = "Price is required") @Min(value = 0, message = "Price cannot be negative") BigDecimal price,
     @NotNull(message = "Stock quantity is required") @Min(value = 0, message = "Stock cannot be negative") Integer stockQuantity,
     @NotBlank(message = "Category is required") String category,
-    List<String> mediaIds // Optional at creation
+   List<ProductMedia> media
 ) {}

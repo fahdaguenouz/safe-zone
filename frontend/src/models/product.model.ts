@@ -1,3 +1,5 @@
+import { ProductMedia } from "./media.model";
+
 export interface Product {
   id?: string;
   name: string;
@@ -6,6 +8,6 @@ export interface Product {
   sellerId: string;
   stockQuantity: number;
   category: string;
-  mediaIds: string[]; 
+  media?: ProductMedia[];
   createdAt?: Date;
 }

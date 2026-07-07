@@ -7,42 +7,45 @@
     <mat-icon>chevron_right</mat-icon>
     <span class="current">{{ product?.name }}</span>
   </nav>
+  <div *ngIf="!isLoading && !product" class="empty-state">
+
+    <mat-icon>inventory_2</mat-icon>
+
+    <h2>No products found</h2>
+
+    <p>
+      You haven't added any products yet.
+    </p>
+
+    <button mat-raised-button color="primary" routerLink="/add-product">
+
+      Add your first product
+
+    </button>
+
+  </div>
 
   <div class="detail-container" *ngIf="product">
     <!-- Gallery Section -->
     <div class="gallery-section">
       <div class="main-image-container">
-        <img 
-          [src]="product.mediaIds[selectedImageIndex] || '/images/product.jpeg'" 
-          class="main-image"
-          [alt]="product.name"
-          (error)="onImageError($event)">
-        
-        <!-- Image Navigation -->
-        <button 
-          *ngIf="product.mediaIds.length > 1"
-          mat-icon-button 
-          class="nav-btn prev"
-          (click)="prevImage()">
+        <img [src]="product.media?.[selectedImageIndex]?.imageUrl || '/images/product.jpeg'" class="main-image"
+          [alt]="product.name" (error)="onImageError($event)">
+
+        <!-- Image Navigation -->-
+        <button *ngIf="(product.media?.length ?? 0) > 1" mat-icon-button class="nav-btn prev" (click)="prevImage()">
           <mat-icon>chevron_left</mat-icon>
         </button>
-        <button 
-          *ngIf="product.mediaIds.length > 1"
-          mat-icon-button 
-          class="nav-btn next"
-          (click)="nextImage()">
+        <button *ngIf="(product.media?.length ?? 0) > 1" mat-icon-button class="nav-btn next" (click)="nextImage()">
           <mat-icon>chevron_right</mat-icon>
         </button>
       </div>
 
       <!-- Thumbnails -->
-      <div class="thumbnails" *ngIf="product.mediaIds.length > 1">
-        <button 
-          *ngFor="let url of product.mediaIds; let i = index"
-          class="thumb-btn"
-          [class.active]="selectedImageIndex === i"
-          (click)="changeImage(i)">
-          <img [src]="url" [alt]="'Image ' + (i + 1)">
+      <div class="thumbnails" *ngIf="(product.media?.length ?? 0) > 1">
+        <button *ngFor="let media of product.media; let i = index" class="thumb-btn"
+          [class.active]="selectedImageIndex === i" (click)="changeImage(i)">
+          <img [src]="media.imageUrl" [alt]="'Image ' + (i + 1)">
         </button>
       </div>
     </div>
@@ -53,78 +56,75 @@
         <span class="category-badge" *ngIf="product.category">{{ product.category }}</span>
         <h1 class="product-title">{{ product.name }}</h1>
 
-      <div class="price-section">
-        <span class="current-price">{{ product.price | currency }}</span>
-        <span class="stock-status" [class.in-stock]="product.stockQuantity > 0" [class.out-of-stock]="product.stockQuantity === 0">
-          <mat-icon>{{ product.stockQuantity > 0 ? 'check_circle' : 'cancel' }}</mat-icon>
-          {{ product.stockQuantity > 0 ? (product.stockQuantity + ' in stock') : 'Out of stock' }}
-        </span>
-      </div>
-
-      <div class="seller-card" *ngIf="seller">
-        <div class="seller-avatar">
-          {{ seller.username.charAt(0).toUpperCase() }}
+        <div class="price-section">
+          <span class="current-price">{{ product.price | currency }}</span>
+          <span class="stock-status" [class.in-stock]="product.stockQuantity > 0"
+            [class.out-of-stock]="product.stockQuantity === 0">
+            <mat-icon>{{ product.stockQuantity > 0 ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ product.stockQuantity > 0 ? (product.stockQuantity + ' in stock') : 'Out of stock' }}
+          </span>
         </div>
-        <div class="seller-info">
-          <span class="seller-label">Sold by</span>
-          <span class="seller-name">{{ seller.username }}</span>
-        </div>
-        <button mat-stroked-button color="primary" class="view-store-btn">
-          View Store
-        </button>
-      </div>
 
-      <div class="description-section">
-        <h3>Description</h3>
-        <p class="description-text">{{ product.description || 'No description available.' }}</p>
-      </div>
-
-      <div class="actions-section">
-        <div class="quantity-selector" *ngIf="product.stockQuantity > 0">
-          <button mat-icon-button (click)="decrementQty()">
-            <mat-icon>remove</mat-icon>
-          </button>
-          <span class="quantity">{{ quantity }}</span>
-          <button mat-icon-button (click)="incrementQty()">
-            <mat-icon>add</mat-icon>
+        <div class="seller-card" *ngIf="seller">
+          <div class="seller-avatar">
+            {{ seller.username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="seller-info">
+            <span class="seller-label">Sold by</span>
+            <span class="seller-name">{{ seller.username }}</span>
+          </div>
+          <button mat-stroked-button color="primary" class="view-store-btn">
+            View Store
           </button>
         </div>
 
-        <button 
-          mat-raised-button 
-          color="primary" 
-          class="buy-btn"
-          [disabled]="product.stockQuantity === 0">
-          <mat-icon>shopping_bag</mat-icon>
-          {{ product.stockQuantity > 0 ? 'Add to Cart' : 'Out of Stock' }}
-        </button>
-      </div>
+        <div class="description-section">
+          <h3>Description</h3>
+          <p class="description-text">{{ product.description || 'No description available.' }}</p>
+        </div>
 
-      <!-- Additional Info -->
-      <div class="additional-info">
-        <div class="info-item">
-          <mat-icon>local_shipping</mat-icon>
-          <span>Free shipping on orders over $50</span>
+        <div class="actions-section">
+          <div class="quantity-selector" *ngIf="product.stockQuantity > 0">
+            <button mat-icon-button (click)="decrementQty()">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantity">{{ quantity }}</span>
+            <button mat-icon-button (click)="incrementQty()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <button mat-raised-button color="primary" class="buy-btn" [disabled]="product.stockQuantity === 0">
+            <mat-icon>shopping_bag</mat-icon>
+            {{ product.stockQuantity > 0 ? 'Add to Cart' : 'Out of Stock' }}
+          </button>
         </div>
-        <div class="info-item">
-          <mat-icon>verified</mat-icon>
-          <span>Verified seller</span>
-        </div>
-        <div class="info-item">
-          <mat-icon>replay</mat-icon>
-          <span>30-day return policy</span>
+
+        <!-- Additional Info -->
+        <div class="additional-info">
+          <div class="info-item">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Free shipping on orders over $50</span>
+          </div>
+          <div class="info-item">
+            <mat-icon>verified</mat-icon>
+            <span>Verified seller</span>
+          </div>
+          <div class="info-item">
+            <mat-icon>replay</mat-icon>
+            <span>30-day return policy</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Loading Skeleton -->
-  <div class="skeleton-loader" *ngIf="isLoading">
-    <div class="skeleton-image"></div>
-    <div class="skeleton-content">
-      <div class="skeleton-line title"></div>
-      <div class="skeleton-line price"></div>
-      <div class="skeleton-line desc"></div>
+    <!-- Loading Skeleton -->
+    <div class="skeleton-loader" *ngIf="isLoading">
+      <div class="skeleton-image"></div>
+      <div class="skeleton-content">
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line price"></div>
+        <div class="skeleton-line desc"></div>
+      </div>
     </div>
   </div>
-</div>

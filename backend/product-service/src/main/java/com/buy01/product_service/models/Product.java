@@ -1,9 +1,9 @@
 package com.buy01.product_service.models;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.buy01.product_service.models.ProductMedia;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,8 +33,7 @@ public class Product {
     // Security & Ownership: The UUID of the user who created this product
     private String sellerId;
 
-    // An array of IDs pointing to images in the Media Service
-    private List<String> mediaIds;
+    private List<ProductMedia> media;
 
     @CreatedDate
     private LocalDateTime createdAt;

@@ -5,9 +5,9 @@ export interface MediaMetadata {
   size: number; // Bytes
   url: string;
 }
-
-export interface UploadResponse {
-  mediaId: string;
-  url: string;
-  message: string;
+export interface ProductMedia {
+    imageUrl: string;
+    publicId: string;
 }
+
+

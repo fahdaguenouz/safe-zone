@@ -1,5 +1,5 @@
 package com.buy01.product_service.dto;
-
+import com.buy01.product_service.models.ProductMedia;
 import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +14,6 @@ public record ProductResponse(
     Integer stockQuantity,
     String category,
     String sellerId,
-    List<String> mediaIds,
+    List<ProductMedia> media,
     LocalDateTime createdAt
 ) {}

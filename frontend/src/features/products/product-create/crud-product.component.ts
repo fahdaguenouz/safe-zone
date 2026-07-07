@@ -6,6 +6,7 @@ import { forkJoin, of } from 'rxjs';
 import { MediaService } from '../../../services/media.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ProductMedia } from '../../../models/media.model';
 
 @Component({
   standalone: false,
@@ -27,7 +28,7 @@ export class AddProductComponent implements OnInit {
   isSubmitMode = false;
   files: File[] = [];
   previewUrls: string[] = [];
-  existingMedia: string[] = [];
+  existingMedia: ProductMedia[] = [];
   categories: any[] = [];
   selectedPreviewImage: string | null = null;
 
@@ -71,8 +72,9 @@ export class AddProductComponent implements OnInit {
       this.productService.getProductById(this.productId).subscribe({
         next: (product) => {
           this.productForm.patchValue(product);
-          this.existingMedia = product.mediaIds || [];
-          this.previewUrls = [...this.existingMedia];
+          this.existingMedia = product.media || [];
+
+          this.previewUrls = this.existingMedia.map((media) => media.imageUrl);
         },
         error: () => {
           this.toast.showError('Failed to load product');
@@ -194,11 +196,11 @@ export class AddProductComponent implements OnInit {
 
       forkJoin(uploadObservables).subscribe({
         next: (responses: any[]) => {
-          console.log("UPLOAD RESPONSES:", responses);
-          const newMediaIds = responses.flatMap((res: any[]) => res.map((file) => file.fileName));
-          console.log("MEDIA IDS:", newMediaIds);
-          const finalMediaIds = [...this.existingMedia, ...newMediaIds];
-          this.saveProduct(finalMediaIds);
+          console.log('UPLOAD RESPONSES:', responses);
+          const newMedia = responses.flatMap((res) => res);
+          console.log('MEDIA:', newMedia);
+          const finalMedia = [...this.existingMedia, ...newMedia];
+          this.saveProduct(finalMedia);
         },
         error: (err) => {
           console.error(err);
@@ -212,10 +214,10 @@ export class AddProductComponent implements OnInit {
     }
   }
 
-  saveProduct(mediaIds: string[]): void {
+  saveProduct(media: ProductMedia[]): void {
     const payload = {
       ...this.productForm.value,
-      mediaIds: mediaIds,
+      media: media,
     };
 
     const action$ = this.isEditMode

@@ -13,39 +13,40 @@ const CATEGORY_API = `${environment.gatewayUrl}/categories`;
   providedIn: 'root',
 })
 export class ProductService {
+
   constructor(private http: HttpClient) {}
-  // product.service.ts
 
   getCategories(): Observable<any[]> {
     return this.http.get<any[]>(CATEGORY_API);
   }
 
-  // Public endpoint to get all products
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(PRODUCT_API);
   }
 
-  createProduct(product: any): Observable<Product> {
-    return this.http.post<Product>(`${PRODUCT_API}`, product);
-  }
   getProductById(id: string): Observable<Product> {
     return this.http.get<Product>(`${PRODUCT_API}/${id}`);
   }
-  // product.service.ts
-  getUserById(userId: string): Observable<User> {
-    // Matches your Gateway route for User Service
-    return this.http.get<User>(`${environment.gatewayUrl}/users/${userId}`);
-  }
-  // product.service.ts
+
   getMyProducts(): Observable<Product[]> {
-    // Matches your Backend: @GetMapping("/me") in ProductController
     return this.http.get<Product[]>(`${PRODUCT_API}/me`);
+  }
+
+  createProduct(product: Product): Observable<Product> {
+    return this.http.post<Product>(PRODUCT_API, product);
+  }
+
+  updateProduct(id: string, product: Product): Observable<Product> {
+    return this.http.put<Product>(`${PRODUCT_API}/${id}`, product);
   }
 
   deleteProduct(id: string): Observable<void> {
     return this.http.delete<void>(`${PRODUCT_API}/${id}`);
-  } 
- updateProduct(id: string, product: Product): Observable<any> {
-  return this.http.put(`${PRODUCT_API}/${id}`, product);
-} 
+  }
+
+  getUserById(userId: string): Observable<User> {
+    return this.http.get<User>(
+      `${environment.gatewayUrl}/users/${userId}`
+    );
+  }
 }
