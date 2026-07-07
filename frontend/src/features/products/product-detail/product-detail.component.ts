@@ -26,6 +26,7 @@ export class ProductDetailComponent implements OnInit {
     if (id) {
       this.productService.getProductById(id).subscribe({
         next: (data) => {
+          console.log('Product data:', data);
           this.product = data;
           this.isLoading = false;
           this.fetchSellerInfo(data.sellerId);

@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
-    // Custom method to let sellers view their own inventory
     List<Product> findBySellerId(String sellerId);
 }

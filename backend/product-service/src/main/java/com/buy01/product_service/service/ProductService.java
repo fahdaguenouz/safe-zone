@@ -4,6 +4,7 @@ import com.buy01.product_service.dto.ProductRequest;
 import com.buy01.product_service.dto.ProductResponse;
 import com.buy01.product_service.event.ProductEventProducer;
 import com.buy01.product_service.models.Product;
+import com.buy01.product_service.models.ProductMedia;
 import com.buy01.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductEventProducer productEventProducer;
 
-
     public ProductResponse createProduct(ProductRequest request, String sellerId) {
 
         Product product = Product.builder()
@@ -34,8 +34,11 @@ public class ProductService {
                 .sellerId(sellerId)
                 .media(request.media())
                 .build();
+        Product saved = productRepository.save(product);
 
-        return mapToResponse(productRepository.save(product));
+        System.out.println(saved);
+
+        return mapToResponse(saved);
     }
 
     public List<ProductResponse> getAllProducts() {
