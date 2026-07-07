@@ -1,47 +1,150 @@
 #!/bin/bash
 
-# Stop the script if any command fails
 set -e
 
-# Load environment variables
+clear
+
+# ===============================
+# Colors
+# ===============================
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# ===============================
+# Load Environment Variables
+# ===============================
 if [ -f "./load_env.sh" ]; then
     source ./load_env.sh
 fi
 
-# Define the colors for output
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-NC='\033[0m'
+echo -e "${BLUE}🚀 Buy01 Microservices Build & Start Script${NC}"
+echo ""
 
-echo -e "${BLUE}🔨 Starting Multi-Service Build Process...${NC}\n"
+# ===============================
+# Cleanup
+# ===============================
+cleanup() {
+    echo ""
+    echo -e "${YELLOW}🛑 Stopping all running Spring Boot services...${NC}"
+    pkill -P $$ || true
+    echo -e "${GREEN}✅ All services stopped.${NC}"
+    exit 0
+}
 
-# Array of service directories
+trap cleanup SIGINT
+
+# ===============================
+# Kill old Java processes (optional)
+# ===============================
+echo -e "${BLUE}🧹 Cleaning previous processes...${NC}"
+pkill -f "spring-boot:run" || true
+
+# ===============================
+# Clean logs
+# ===============================
+echo -e "${BLUE}🧹 Cleaning logs...${NC}"
+rm -rf logs
+mkdir -p logs
+
+# ===============================
+# Services
+# ===============================
 SERVICES=(
-    "backend/api-gateway"
-    "backend/discovery-server"
-    "backend/media-service"
-    "backend/product-service"
-    "backend/user-service"
+    "discovery-server"
+    "api-gateway"
+    "user-service"
+    "product-service"
+    "media-service"
 )
 
-# Loop through each service and build
+# ===============================
+# Build
+# ===============================
+echo ""
+echo -e "${BLUE}🔨 Building all services...${NC}"
+
 for SERVICE in "${SERVICES[@]}"; do
-    if [ -d "$SERVICE" ]; then
-        echo -e "${BLUE}📦 Building Service:${NC} $SERVICE"
-        
-        # Move into directory, build, and come back automatically
-        (
-            cd "$SERVICE"
-            # Ensure Maven Wrapper is executable
-            chmod +x mvnw
-            # Clean and Package
-            ./mvnw clean package -DskipTests
-        )
-        
-        echo -e "${GREEN}✅ Successfully built $SERVICE${NC}\n"
-    else
-        echo -e "${RED}❌ Directory $SERVICE not found. Skipping...${NC}\n"
-    fi
+
+    echo -e "${BLUE}📦 Building ${SERVICE}${NC}"
+
+    (
+        cd "backend/$SERVICE"
+
+        chmod +x mvnw
+
+        ./mvnw clean package -DskipTests \
+            > "../../logs/${SERVICE}-build.log" 2>&1
+    )
+
+    echo -e "${GREEN}✅ ${SERVICE} built successfully${NC}"
 done
 
-echo -e "${GREEN}🚀 All services packaged successfully!${NC}"
+echo ""
+echo -e "${GREEN}🎉 All services compiled successfully.${NC}"
+
+# ===============================
+# Start Eureka
+# ===============================
+echo ""
+echo -e "${BLUE}📡 Starting discovery-server...${NC}"
+
+(
+    cd backend/discovery-server
+    ./mvnw spring-boot:run \
+        > ../../logs/discovery-server.log 2>&1
+) &
+
+echo -e "${YELLOW}⏳ Waiting 15 seconds for Eureka...${NC}"
+sleep 15
+
+# ===============================
+# Start Remaining Services
+# ===============================
+OTHER_SERVICES=(
+    "api-gateway"
+    "user-service"
+    "product-service"
+    "media-service"
+)
+
+echo ""
+echo -e "${BLUE}🚀 Starting remaining services...${NC}"
+
+for SERVICE in "${OTHER_SERVICES[@]}"; do
+
+    echo -e "${BLUE}⚙️ Starting ${SERVICE}${NC}"
+
+    (
+        cd "backend/$SERVICE"
+        ./mvnw spring-boot:run \
+            > "../../logs/${SERVICE}.log" 2>&1
+    ) &
+
+    sleep 3
+done
+
+echo ""
+echo -e "${GREEN}==============================================${NC}"
+echo -e "${GREEN}✅ Buy01 Microservices are running!${NC}"
+echo -e "${GREEN}==============================================${NC}"
+echo ""
+echo "📡 Eureka Dashboard : http://localhost:8761"
+echo "🌐 API Gateway      : http://localhost:8080"
+echo "📖 Swagger          : http://localhost:8080/swagger-ui.html"
+echo ""
+echo "📂 Logs:"
+echo "   logs/discovery-server.log"
+echo "   logs/api-gateway.log"
+echo "   logs/user-service.log"
+echo "   logs/product-service.log"
+echo "   logs/media-service.log"
+echo ""
+echo "Example:"
+echo "   tail -f logs/product-service.log"
+echo ""
+echo "Press Ctrl+C to stop all services."
+
+wait

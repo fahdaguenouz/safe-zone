@@ -116,43 +116,55 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  private processUpdate(result: any) {
-    if (result.file) {
-      this.mediaService.uploadImage(result.file).subscribe({
-        next: (res: any[]) => {
-          if (res && res.length > 0) {
-            const fileName = res[0].fileName; 
-            this.finalizeUpdate(result, fileName);
-          }
-        },
-        error: (err) => {
+private processUpdate(result: any) {
+  if (result.file) {
+    this.mediaService.uploadImage(result.file).subscribe({
+      next: (media) => {
+        if (!media || media.length === 0) {
           this.toast.showError('Image upload failed');
-        },
-      });
-    } else {
-      this.finalizeUpdate(result);
-    }
-  }
+          return;
+        }
 
-  private finalizeUpdate(formValues: any, fileName?: string) {
-    const payload = {
-      firstName: formValues.firstName,
-      lastName: formValues.lastName,
-      ...(fileName && { avatarMediaId: fileName }), 
-    };
+        const imageUrl = media[0].imageUrl;
 
-    this.userService.updateProfile(payload).subscribe({
-      next: (updated: any) => {
-        this.authService.setLoggedInUser({ ...this.user, ...updated });
-        this.toast.showSuccess('Profile updated successfully!');
+        this.finalizeUpdate(result, imageUrl);
       },
-      error: () => {
-        this.toast.showError('Failed to update profile');
-      }
+      error: (err) => {
+        console.error(err);
+        this.toast.showError('Image upload failed');
+      },
     });
+  } else {
+    this.finalizeUpdate(result);
   }
+}
 
-  // Delete Product Methods
+ private finalizeUpdate(formValues: any, avatarUrl?: string) {
+  const payload = {
+    firstName: formValues.firstName,
+    lastName: formValues.lastName,
+    ...(avatarUrl && { avatarMediaId: avatarUrl }),
+  };
+
+  this.userService.updateProfile(payload).subscribe({
+    next: (updated) => {
+
+      this.user = {
+        ...this.user!,
+        ...updated,
+      };
+
+      this.authService.setLoggedInUser(this.user);
+
+      this.toast.showSuccess('Profile updated successfully!');
+    },
+    error: (err) => {
+      console.error(err);
+      this.toast.showError('Failed to update profile');
+    },
+  });
+}
+
   openDeleteDialog(product: Product) {
     this.productToDelete = product;
     this.deleteDialogRef = this.dialog.open(this.deleteDialog, {

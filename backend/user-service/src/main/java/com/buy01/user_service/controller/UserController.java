@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserRepository userRepository;
-    @Value("${media-service.base-url}")
-    private String mediaServiceBaseUrl;
 
     // GET /users/me - Fetch my own profile
     @GetMapping("/me")
@@ -33,15 +31,12 @@ public class UserController {
             @AuthenticationPrincipal User currentUser,
             @Valid @RequestBody UpdateProfileRequest request) {
 
-        // Update the fields
         currentUser.setFirstName(request.firstName());
         currentUser.setLastName(request.lastName());
 
-        if (request.avatarMediaId() != null) {
-            currentUser.setAvatarMediaId(request.avatarMediaId());
-        }
+        // Store the Cloudinary URL directly
+        currentUser.setAvatarMediaId(request.avatarMediaId());
 
-        // Save back to MongoDB
         User updatedUser = userRepository.save(currentUser);
 
         return ResponseEntity.ok(mapToResponse(updatedUser));
@@ -50,18 +45,6 @@ public class UserController {
     // Helper method to convert the User entity to a safe DTO
     private UserProfileResponse mapToResponse(User user) {
 
-        // Construct the full URL if the user has an avatar
-        String fullAvatarUrl = null;
-        if (user.getAvatarMediaId() != null && !user.getAvatarMediaId().isEmpty()) {
-            // Check if it's already a full URL (just in case the frontend sent the whole
-            // URL by mistake)
-            if (user.getAvatarMediaId().startsWith("http")) {
-                fullAvatarUrl = user.getAvatarMediaId();
-            } else {
-                fullAvatarUrl = mediaServiceBaseUrl + user.getAvatarMediaId();
-            }
-        }
-
         return UserProfileResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -69,8 +52,7 @@ public class UserController {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
-                // Pass the full URL to the frontend!
-                .avatarMediaId(fullAvatarUrl)
+                .avatarMediaId(user.getAvatarMediaId())
                 .build();
     }
 

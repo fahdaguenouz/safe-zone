@@ -12,7 +12,10 @@ export class UserService {
     return this.http.get<User>(`${environment.gatewayUrl}/users/me`); // Adjust path if it's just /me
   }
 
-  updateProfile(userData: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${environment.gatewayUrl}/users/me`, userData);
-  }
+ updateProfile(userData: Partial<User>): Observable<User> {
+  return this.http.put<User>(
+    `${environment.gatewayUrl}/users/me`,
+    userData
+  );
+}
 }
