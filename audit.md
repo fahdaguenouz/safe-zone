@@ -1,53 +1,59 @@
-#### Initial Setup & Access
+#### Functional
 
-##### Download the project and initiate it. Try accessing the web pages and the API endpoints using a web browser and tools like Postman.
+##### Access the SonarQube web interface running on your local environment.
 
-###### Does the application run seamlessly, and are you able to interact with its functionalities?
+###### Is the SonarQube web interface accessible, and has it been configured to work with your project's codebase?
 
-#### User & Product CRUD Operations
+##### Integrate SonarQube with your GitHub repository.
 
-##### Examine the CRUD operations for Users (both client and seller) and Products.
+###### Is SonarQube integrated with GitHub, and does it trigger code analysis on every push to the repository?
 
-###### Are CRUD operations for Users and Products correctly implemented, and does each user role have the appropriate access levels?
+##### Set up and configure SonarQube for code analysis using Docker.
 
-#### Authentication & Role Validation
+###### Is SonarQube configured correctly, and does it analyze code during the CI/CD pipeline?
 
-##### Sign up as a client and a seller. Afterwards, test functionalities specific to each role.
+##### Automate code analysis using SonarQube during the CI/CD pipeline.
 
-###### Does the authentication system work, and do the operations respect the user roles (seller vs client)?
+###### Does the CI/CD pipeline correctly analyze code, and does it fail when code quality or security issues are detected?
 
-#### Media Upload & Product Association
+##### Implement a code review and approval process.
 
-##### As a seller, attempt to upload media for a product and ensure it adheres to the given size and type constraints.
+###### Is there a code review and approval process in place to ensure code quality improvements are reviewed and approved?
 
-###### Can media be uploaded effectively, and are the constraints enforced? Are products correctly associated with these media?
+#### Comprehension
 
-#### Frontend Interaction
+##### SonarQube Setup and Integration
 
-##### Explore the sign-in/up pages, seller product management page, product listing, and media upload page for products.
+###### Can the student explain the steps required to set up SonarQube within the project environment?
 
-###### Are all the frontend pages functioning as expected, and is the user experience intuitive?
+###### Can the student describe the process of integrating SonarQube with the project's CI/CD pipeline and GitHub repository?
+
+##### SonarQube Functionality
+
+###### Can the student explain how SonarQube functions within the project, including its role in code analysis and how it contributes to code quality improvement?
 
 #### Security
 
-##### Analyze for the specified security measures like hashed passwords, input validation, protection of sensitive data, and HTTPS usage.
+##### Review the permissions and access controls in SonarQube.
 
-###### Are the mentioned security practices appropriately enforced?
+###### Are permissions set appropriately to prevent unauthorized access to code analysis results?
 
 #### Code Quality and Standards
 
-##### Evaluate the backend code for appropriate usage of Spring and other related annotations.
+##### Examine the SonarQube rules and code analysis reports.
 
-###### Are the Spring Boot, MongoDB, and other relevant annotations used correctly throughout the application?
+###### Are SonarQube rules configured correctly, and are code quality and security issues accurately identified?
 
-#### Frontend Implementation
+##### Review any code quality improvements made based on SonarQube feedback.
 
-##### Investigate the frontend codebase, especially the Angular components, services, and modules.
+###### Are code quality issues addressed and committed to the GitHub repository?
 
-###### Is the Angular code structured efficiently, and are components, services, and modules effectively utilized?
+#### Bonus
 
-#### Error Handling & Edge Cases
+##### Set up email or Slack notifications for code analysis results.
 
-##### Attempt actions that might cause errors, such as registering with an existing email, uploading invalid media formats, or exceeding the media size limit.
+###### +Are notifications in place for code analysis results?
 
-###### Does the application gracefully handle these errors, providing useful feedback to the user?
+##### Integrate SonarQube with IDEs (Integrated Development Environments).
+
+###### +Are IDE integrations in place to provide developers with real-time code quality feedback during development?
